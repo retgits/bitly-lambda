@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Serverless Application Model for bitly-lambda
+Resources:
+  bitly:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri: bin/
+      Handler: bitly-lambda
+      Runtime: go1.x
+      Tracing: Active
+      Timeout: 120
+      Policies:
+        - AmazonS3FullAccess
+        - AmazonSSMReadOnlyAccess
+      Environment:
+        Variables:
+          region: us-west-2
+          s3bucket: retgits-bitly
+      Events:
+        bitly:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 2 * * ? *) # Run at 2:00 am (UTC) every day
+      Description: Collecting my bitly stats
+      MemorySize: 128
