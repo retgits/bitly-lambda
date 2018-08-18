@@ -1,7 +1,5 @@
-/*
-Package main is the main implementation of the Bitly serverless app and retrieves statistics on the various bitlinks associated with the account of the authenticated user
-*/
-package main
+// Package util implements utility methods
+package util
 
 // The imports
 import (
@@ -15,20 +13,20 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-// getFile downloads a specific file to a temporary location in AWS Lambda
-func getFile(awsSession *session.Session, filename string, s3Bucket string) error {
+// DownloadFile downloads a file from Amazon S3 and stores it  in the specified location.
+func DownloadFile(awsSession *session.Session, folder string, filename string, bucket string) error {
 	// Create an instance of the S3 Downloader
 	s3Downloader := s3manager.NewDownloader(awsSession)
 
 	// Create a new temporary file
-	tempFile, err := os.Create(filepath.Join(tempFolder, filename))
+	tempFile, err := os.Create(filepath.Join(folder, filename))
 	if err != nil {
 		return err
 	}
 
 	// Prepare the download
 	objectInput := &s3.GetObjectInput{
-		Bucket: aws.String(s3Bucket),
+		Bucket: aws.String(bucket),
 		Key:    aws.String(filename),
 	}
 
@@ -41,15 +39,15 @@ func getFile(awsSession *session.Session, filename string, s3Bucket string) erro
 	return nil
 }
 
-// copyFile creates a copy of an existing file with a new name
-func copyFile(awsSession *session.Session, filename string, s3Bucket string) error {
+// CopyFile creates a copy of an existing file with a new name
+func CopyFile(awsSession *session.Session, filename string, bucket string) error {
 	// Create an instance of the S3 Session
 	s3Session := s3.New(awsSession)
 
 	// Prepare the copy object
 	objectInput := &s3.CopyObjectInput{
-		Bucket:     aws.String(s3Bucket),
-		CopySource: aws.String(fmt.Sprintf("/%s/%s", s3Bucket, filename)),
+		Bucket:     aws.String(bucket),
+		CopySource: aws.String(fmt.Sprintf("/%s/%s", bucket, filename)),
 		Key:        aws.String(fmt.Sprintf("%s_bak", filename)),
 	}
 
@@ -62,13 +60,13 @@ func copyFile(awsSession *session.Session, filename string, s3Bucket string) err
 	return nil
 }
 
-// uploadFile uploads a file to S3
-func uploadFile(awsSession *session.Session, filename string, s3Bucket string) error {
+// UploadFile uploads a file to Amazon S3
+func UploadFile(awsSession *session.Session, folder string, filename string, bucket string) error {
 	// Create an instance of the S3 Uploader
 	s3Uploader := s3manager.NewUploader(awsSession)
 
 	// Create a file pointer to the source
-	reader, err := os.Open(filepath.Join(tempFolder, filename))
+	reader, err := os.Open(filepath.Join(folder, filename))
 	if err != nil {
 		return err
 	}
@@ -76,7 +74,7 @@ func uploadFile(awsSession *session.Session, filename string, s3Bucket string) e
 
 	// Prepare the upload
 	uploadInput := &s3manager.UploadInput{
-		Bucket: aws.String(s3Bucket),
+		Bucket: aws.String(bucket),
 		Key:    aws.String(filename),
 		Body:   reader,
 	}

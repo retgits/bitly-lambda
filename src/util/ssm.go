@@ -1,7 +1,5 @@
-/*
-Package main is the main implementation of the Bitly serverless app and retrieves statistics on the various bitlinks associated with the account of the authenticated user
-*/
-package main
+// Package util implements utility methods
+package util
 
 // The imports
 import (
@@ -10,8 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
-// getSSMParameter gets a parameter from the AWS Simple Systems Manager service.
-func getSSMParameter(awsSession *session.Session, name string, decrypt bool) (string, error) {
+// GetSSMParameter gets a parameter from the AWS Simple Systems Manager service.
+func GetSSMParameter(awsSession *session.Session, name string, decrypt bool) (string, error) {
 	// Create an instance of the SSM Session
 	ssmSession := ssm.New(awsSession)
 

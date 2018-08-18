@@ -17,6 +17,7 @@ Resources:
         Variables:
           region: us-west-2
           s3bucket: retgits-bitly
+          tempFolder: /tmp
       Events:
         bitly:
           Type: Schedule

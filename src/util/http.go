@@ -1,7 +1,5 @@
-/*
-Package main is the main implementation of the Bitly serverless app and retrieves statistics on the various bitlinks associated with the account of the authenticated user
-*/
-package main
+// Package util implements utility methods
+package util
 
 // The imports
 import (
@@ -11,14 +9,17 @@ import (
 	"net/http"
 )
 
-// httpRequest executes a request to a URL and returns the response body as a JSON object
-func httpRequest(URL string, authToken string) (map[string]interface{}, error) {
+// HTTPRequest executes a request to a URL and returns the response body as a JSON object
+func HTTPRequest(URL string, header http.Header) (map[string]interface{}, error) {
 
 	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating HTTP request: %s", err.Error())
 	}
-	req.Header.Add("authorization", fmt.Sprintf("Bearer %s", authToken))
+
+	if header != nil {
+		req.Header = header
+	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
