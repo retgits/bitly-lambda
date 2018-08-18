@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -91,15 +92,20 @@ func handler(request events.CloudWatchEvent) error {
 	}
 	defer csvFile.Close()
 
-	// Get the clickdata
+	// Get the clickdata for yesterday
+	yesterday := time.Now().UTC().AddDate(0, 0, -1).Format("2006-01-02")
 	for _, link := range links {
 		link := link.(map[string]interface{})
 		response, err = httpRequest(fmt.Sprintf("https://api-ssl.bitly.com/v4/bitlinks/%s/clicks?unit=day", strings.Replace(link["id"].(string), "/", "%2F", 1)), bitlyToken)
 		if err != nil {
 			return err
 		}
-		clicks := response["link_clicks"].([]interface{})[1].(map[string]interface{})
-		csvFile.WriteString(fmt.Sprintf("%s;%s;%s;%v", link["link"], link["long_url"], clicks["date"], clicks["clicks"]))
+		if len(response["link_clicks"].([]interface{})) > 1 {
+			clicks := response["link_clicks"].([]interface{})[1].(map[string]interface{})
+			if strings.HasPrefix(clicks["date"].(string), yesterday) {
+				csvFile.WriteString(fmt.Sprintf("%s;%s;%s;%v", link["link"], link["long_url"], clicks["date"], clicks["clicks"]))
+			}
+		}
 	}
 
 	// Store the modified csv on S3
