@@ -18,6 +18,8 @@ Resources:
           region: us-west-2
           s3bucket: retgits-bitly
           tempFolder: /tmp
+      Tags:
+        version: "0.0.10"
       Events:
         bitly:
           Type: Schedule

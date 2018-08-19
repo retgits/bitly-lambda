@@ -1,3 +1,12 @@
+## Binaries
 bin/*
+
+## SAM Local deployment artifacts
 packaged.yaml
+
+## Debug
 debug/
+
+## SQLite databases
+test/*.db
+*.db
