@@ -19,7 +19,7 @@ Resources:
           s3bucket: retgits-bitly
           tempFolder: /tmp
       Tags:
-        version: "0.0.10"
+        version: "0.0.11"
       Events:
         bitly:
           Type: Schedule

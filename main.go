@@ -92,7 +92,7 @@ func handler(request events.CloudWatchEvent) error {
 		return err
 	}
 
-	bitlyGroup := response["groups"].([]interface{})[0].(map[string]interface{})["guid"].(string)
+	bitlyGroup := response.Body["groups"].([]interface{})[0].(map[string]interface{})["guid"].(string)
 
 	// Get the bitlinks
 	// TODO: Handle pagination in case more than 50 links are created
@@ -101,7 +101,7 @@ func handler(request events.CloudWatchEvent) error {
 		log.Printf("Error while retrieving bitlinks: %s\n", err.Error())
 		return err
 	}
-	links := response["links"].([]interface{})
+	links := response.Body["links"].([]interface{})
 
 	// Send each link to a channel
 	go func() {
@@ -128,8 +128,8 @@ func handler(request events.CloudWatchEvent) error {
 			}
 
 			// Write the link information to the db
-			if len(response["link_clicks"].([]interface{})) > 1 {
-				clicks := response["link_clicks"].([]interface{})[1].(map[string]interface{})
+			if len(response.Body["link_clicks"].([]interface{})) > 1 {
+				clicks := response.Body["link_clicks"].([]interface{})[1].(map[string]interface{})
 				if strings.HasPrefix(clicks["date"].(string), yesterday) {
 					u, err := url.Parse(link["long_url"].(string))
 					if err != nil {

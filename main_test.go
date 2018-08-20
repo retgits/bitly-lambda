@@ -22,7 +22,6 @@ func TestHandler(t *testing.T) {
 		err := handler(datamap)
 		if err != nil {
 			panic(err)
-			t.Fatal("Everything should be ok")
 		}
 	})
 }

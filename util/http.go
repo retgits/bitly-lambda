@@ -9,12 +9,18 @@ import (
 	"net/http"
 )
 
-// HTTPRequest executes a request to a URL and returns the response body as a JSON object
-func HTTPRequest(URL string, header http.Header) (map[string]interface{}, error) {
+// HTTPResponse is the response type to the HTTPRequest
+type HTTPResponse struct {
+	Body    map[string]interface{}
+	Headers http.Header
+}
 
+// HTTPRequest executes a request to a URL and returns the response body as a JSON object
+func HTTPRequest(URL string, header http.Header) (HTTPResponse, error) {
+	httpresponse := HTTPResponse{}
 	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error while creating HTTP request: %s", err.Error())
+		return httpresponse, fmt.Errorf("error while creating HTTP request: %s", err.Error())
 	}
 
 	if header != nil {
@@ -23,25 +29,28 @@ func HTTPRequest(URL string, header http.Header) (map[string]interface{}, error)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error while performing HTTP request: %s", err.Error())
+		return httpresponse, fmt.Errorf("error while performing HTTP request: %s", err.Error())
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("the HTTP request returned a non-OK response: %v", res.StatusCode)
+		return httpresponse, fmt.Errorf("the HTTP request returned a non-OK response: %v", res.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return httpresponse, err
 	}
 
 	var data map[string]interface{}
 
 	if err := json.Unmarshal(body, &data); err != nil {
-		return nil, fmt.Errorf("error while unmarshaling HTTP response to JSON: %s", err.Error())
+		return httpresponse, fmt.Errorf("error while unmarshaling HTTP response to JSON: %s", err.Error())
 	}
 
-	return data, nil
+	httpresponse.Body = data
+	httpresponse.Headers = res.Header
+
+	return httpresponse, nil
 }
