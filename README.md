@@ -9,11 +9,6 @@ A serverless tool designed to help get statistics from Bitly.
 │   └── database.go     <-- Utils to interact with the SQLite database
 ├── test            
 │   └── event.json      <-- Sample event to test using SAM local
-├── util                
-│   ├── http.go         <-- Utils to interact with HTTP requests
-│   ├── os.go           <-- Utils to interact with the Operating System
-│   ├── s3.go           <-- Utils to interact with Amazon S3
-│   └── ssm.go          <-- Utils to interact with Amazon SSM
 ├── .gitignore          <-- Ignoring the things you do not want in git
 ├── LICENSE             <-- The license file
 ├── main_test.go        <-- Test the code
