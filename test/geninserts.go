@@ -11,7 +11,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/retgits/bitly-lambda/util"
+	"github.com/retgits/lambda-util"
 )
 
 // Constants
@@ -45,7 +45,7 @@ func main() {
 
 	// Get the groups associated with the current account. There should be only one group for a free account
 	httpHeader := http.Header{"Authorization": {fmt.Sprintf("Bearer %s", bitlyToken)}}
-	response, err := util.HTTPRequest("https://api-ssl.bitly.com/v4/groups", httpHeader)
+	response, err := util.HTTPGet("https://api-ssl.bitly.com/v4/groups", "application/json", httpHeader)
 	if err != nil {
 		log.Printf("Error while connecting to Bitly: %s\n", err.Error())
 		panic(err)
@@ -55,7 +55,7 @@ func main() {
 
 	// Get the bitlinks
 	// TODO: Handle pagination in case more than 50 links are created
-	response, err = util.HTTPRequest(fmt.Sprintf("https://api-ssl.bitly.com/v4/groups/%s/bitlinks", bitlyGroup), httpHeader)
+	response, err = util.HTTPGet(fmt.Sprintf("https://api-ssl.bitly.com/v4/groups/%s/bitlinks", bitlyGroup), "application/json", httpHeader)
 	if err != nil {
 		log.Printf("Error while retrieving bitlinks: %s\n", err.Error())
 		panic(err)
@@ -80,7 +80,7 @@ func main() {
 			link := <-linksChan
 
 			// Get the link information from Bitly
-			response, err = util.HTTPRequest(fmt.Sprintf("https://api-ssl.bitly.com/v4/bitlinks/%s/clicks?unit=day", strings.Replace(link["id"].(string), "/", "%2F", 1)), httpHeader)
+			response, err = util.HTTPGet(fmt.Sprintf("https://api-ssl.bitly.com/v4/bitlinks/%s/clicks?unit=day", strings.Replace(link["id"].(string), "/", "%2F", 1)), "application/json", httpHeader)
 			if err != nil {
 				log.Printf("Error while retrieving bitlink click details: %s\n", err.Error())
 				return err

@@ -1,0 +1,15 @@
+language: go
+
+branches:
+  only:
+  - /^v\d.\d{1,}.\d*/
+
+go:
+  - master
+
+install:
+  - pip install --user awscli
+  - pip install --user aws-sam-cli
+  
+script:
+  - make deploy

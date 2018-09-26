@@ -1,6 +1,6 @@
 # Description: Makefile for AWS Lambda functions 
 # Author: Leon Stigter <lstigter@gmail.com>
-# Last Updated: 2018-09-18
+# Last Updated: 2018-09-25
 
 .PHONY: deps clean build deploy test-lambda
 

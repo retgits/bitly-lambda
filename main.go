@@ -86,7 +86,7 @@ func handler(request events.CloudWatchEvent) error {
 
 	// Get the groups associated with the current account. There should be only one group for a free account
 	httpHeader := http.Header{"Authorization": {fmt.Sprintf("Bearer %s", bitlyToken)}}
-	response, err := util.HTTPGet("https://api-ssl.bitly.com/v4/groups", httpHeader)
+	response, err := util.HTTPGet("https://api-ssl.bitly.com/v4/groups", "application/json", httpHeader)
 	if err != nil {
 		log.Printf("Error while connecting to Bitly: %s\n", err.Error())
 		return err
@@ -96,7 +96,7 @@ func handler(request events.CloudWatchEvent) error {
 
 	// Get the bitlinks
 	// TODO: Handle pagination in case more than 50 links are created
-	response, err = util.HTTPGet(fmt.Sprintf("https://api-ssl.bitly.com/v4/groups/%s/bitlinks", bitlyGroup), httpHeader)
+	response, err = util.HTTPGet(fmt.Sprintf("https://api-ssl.bitly.com/v4/groups/%s/bitlinks", bitlyGroup), "application/json", httpHeader)
 	if err != nil {
 		log.Printf("Error while retrieving bitlinks: %s\n", err.Error())
 		return err
@@ -121,7 +121,7 @@ func handler(request events.CloudWatchEvent) error {
 			link := <-linksChan
 
 			// Get the link information from Bitly
-			response, err = util.HTTPGet(fmt.Sprintf("https://api-ssl.bitly.com/v4/bitlinks/%s/clicks?unit=day", strings.Replace(link["id"].(string), "/", "%2F", 1)), httpHeader)
+			response, err = util.HTTPGet(fmt.Sprintf("https://api-ssl.bitly.com/v4/bitlinks/%s/clicks?unit=day", strings.Replace(link["id"].(string), "/", "%2F", 1)), "application/json", httpHeader)
 			if err != nil {
 				log.Printf("Error while retrieving bitlink click details: %s\n", err.Error())
 				return err
